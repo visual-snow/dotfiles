@@ -21,12 +21,14 @@ if ! command -v nvtop >/dev/null 2>&1 || ! command -v sudo >/dev/null 2>&1; then
   apt-get install -y -qq sudo less nano htop ncdu nvtop lsof rsync jq btop tmux zsh git curl >/dev/null
 fi
 
-# 2. these dotfiles
-mkdir -p "$HOME/git"
+# 2. these dotfiles, kept on the volume (~/git -> $WORKSPACE/git) so a restarted container has them
+WORKSPACE=${WORKSPACE:-/workspace}
+mkdir -p "$WORKSPACE/git"
+[ -L "$HOME/git" ] || { rm -rf "$HOME/git"; ln -s "$WORKSPACE/git" "$HOME/git"; }
 if [ -d "$DOT/.git" ]; then
   git -C "$DOT" pull --ff-only -q || true
 else
-  git clone -q https://github.com/visual-snow/dotfiles.git "$DOT"
+  git clone -q --depth 1 https://github.com/visual-snow/dotfiles.git "$DOT"
 fi
 source "$DOT/runpod/pod_env.sh"
 mkdir -p "$HF_HOME" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$WORKSPACE/.vscode-server"
@@ -41,10 +43,17 @@ hash -r
 log "uv $("$HOME/.local/bin/uv" --version)"
 
 # 4. zsh + oh-my-zsh + powerlevel10k + tmux, then the rc files
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
+# oh-my-zsh and the tmux theme live on the volume too; a restart only needs the two symlinks
+if [ ! -d "$WORKSPACE/.oh-my-zsh" ]; then
   log "install.sh --zsh --tmux"
+  rm -rf "$HOME/.oh-my-zsh" "$HOME/.tmux-themepack"
   (cd "$DOT" && ./install.sh --zsh --tmux >/dev/null)  # stderr stays visible
+  mv "$HOME/.oh-my-zsh" "$WORKSPACE/.oh-my-zsh"
+  mv "$HOME/.tmux-themepack" "$WORKSPACE/.tmux-themepack"
 fi
+for d in .oh-my-zsh .tmux-themepack; do
+  [ -L "$HOME/$d" ] || { rm -rf "$HOME/$d"; ln -s "$WORKSPACE/$d" "$HOME/$d"; }
+done
 if ! grep -q 'dotfiles/config/zshrc.sh' "$HOME/.zshrc" 2>/dev/null; then
   log "deploy.sh --aliases=enrique"
   (cd "$DOT" && ./deploy.sh --aliases=enrique </dev/null >/dev/null) || true
