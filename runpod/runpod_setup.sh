@@ -32,11 +32,13 @@ source "$DOT/runpod/pod_env.sh"
 mkdir -p "$HF_HOME" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$WORKSPACE/.vscode-server"
 
 # 3. uv, latest, in ~/.local/bin; its cache and pythons live on /workspace via pod_env.sh
-if ! command -v uv >/dev/null 2>&1; then
+# base images ship an old /usr/bin/uv that cannot read current lockfiles, so check our own copy
+if [ ! -x "$HOME/.local/bin/uv" ]; then
   log "installing uv"
   curl -4 -LsSf https://astral.sh/uv/install.sh | sh >/dev/null
 fi
-log "uv $(uv --version)"
+hash -r
+log "uv $("$HOME/.local/bin/uv" --version)"
 
 # 4. zsh + oh-my-zsh + powerlevel10k + tmux, then the rc files
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
