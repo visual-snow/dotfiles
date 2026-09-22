@@ -8,3 +8,5 @@ export UV_PYTHON_INSTALL_DIR=$WORKSPACE/.cache/uv-python
 export UV_LINK_MODE=hardlink
 export TOKENIZERS_PARALLELISM=false
 case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
+# hf-xet: more parallel chunk transfers on a datacenter pipe (model shards are the slow part)
+export HF_XET_HIGH_PERFORMANCE=1
