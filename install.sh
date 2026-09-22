@@ -131,6 +131,7 @@ else
 
     git clone --depth 1 https://github.com/zsh-users/zsh-history-substring-search \
         ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
+    rm -rf ~/.tmux-themepack  # a leftover copy makes the clone below exit 128
     git clone --depth 1 https://github.com/jimeh/tmux-themepack.git ~/.tmux-themepack
 
     # git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf

@@ -43,11 +43,11 @@ log "uv $("$HOME/.local/bin/uv" --version)"
 # 4. zsh + oh-my-zsh + powerlevel10k + tmux, then the rc files
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   log "install.sh --zsh --tmux"
-  (cd "$DOT" && ./install.sh --zsh --tmux >/dev/null 2>&1)
+  (cd "$DOT" && ./install.sh --zsh --tmux >/dev/null)  # stderr stays visible
 fi
 if ! grep -q 'dotfiles/config/zshrc.sh' "$HOME/.zshrc" 2>/dev/null; then
   log "deploy.sh --aliases=enrique"
-  (cd "$DOT" && ./deploy.sh --aliases=enrique </dev/null >/dev/null 2>&1) || true
+  (cd "$DOT" && ./deploy.sh --aliases=enrique </dev/null >/dev/null) || true
 fi
 # bash is what Jupyter's terminal and non-login ssh commands get, so it sees the same env
 if ! grep -q 'runpod/pod_env.sh' "$HOME/.bashrc" 2>/dev/null; then
