@@ -59,6 +59,9 @@ if command -v ask-sh &> /dev/null; then
   export ASK_SH_OPENAI_MODEL=gpt-4o-mini
   eval "$(ask-sh --init)"
 fi
-eval "$(~/.linuxbrew/bin/brew shellenv zsh)"
+[ -x "$HOME/.linuxbrew/bin/brew" ] && eval "$("$HOME/.linuxbrew/bin/brew" shellenv zsh)"
+[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+# on a RunPod pod, put uv caches and the HF cache on the persistent volume
+[ -d /workspace ] && [ -f "$DOT_DIR/runpod/pod_env.sh" ] && source "$DOT_DIR/runpod/pod_env.sh"
 
 cat $CONFIG_DIR/start.txt

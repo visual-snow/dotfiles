@@ -1,6 +1,21 @@
 # dotfiles
 ZSH, Tmux, Vim and ssh setup on both local/remote machines.
 
+Enrique's fork of [jplhughes/dotfiles](https://github.com/jplhughes/dotfiles). Upstream is kept
+as the `upstream` remote; pull it with `git pull upstream master`. What this fork adds:
+
+* `runpod/runpod_setup.sh`, an idempotent one-liner for a fresh RunPod pod (apt basics, uv, zsh,
+  tmux, powerlevel10k, caches on `/workspace`, HF token, git identity). Run it as root:
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/visual-snow/dotfiles/master/runpod/runpod_setup.sh | bash
+  ```
+
+* `runpod/pod_env.sh`, sourced automatically on any machine that has `/workspace`, so `uv` and
+  Hugging Face keep their caches on the volume that survives a pod restart.
+* `config/aliases_enrique.sh`, deployed with `./deploy.sh --aliases=enrique`.
+* `config/zshrc.sh` no longer errors when linuxbrew is absent, and finds Homebrew on Apple silicon.
+
 ## Installation
 
 ### Step 1
