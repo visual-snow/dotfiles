@@ -10,6 +10,9 @@ set -euo pipefail
 DOT=$HOME/git/dotfiles
 log() { printf '[%s] %s\n' "$(date +%H:%M:%S)" "$*"; }
 
+# 0. RunPod containers stall on IPv6 to raw.githubusercontent.com; make every curl use IPv4
+grep -qx 'ipv4' "$HOME/.curlrc" 2>/dev/null || echo 'ipv4' >> "$HOME/.curlrc"
+
 # 1. apt basics, once per container
 if ! command -v nvtop >/dev/null 2>&1 || ! command -v sudo >/dev/null 2>&1; then
   log "apt packages"
@@ -31,7 +34,7 @@ mkdir -p "$HF_HOME" "$UV_CACHE_DIR" "$UV_PYTHON_INSTALL_DIR" "$WORKSPACE/.vscode
 # 3. uv, latest, in ~/.local/bin; its cache and pythons live on /workspace via pod_env.sh
 if ! command -v uv >/dev/null 2>&1; then
   log "installing uv"
-  curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null
+  curl -4 -LsSf https://astral.sh/uv/install.sh | sh >/dev/null
 fi
 log "uv $(uv --version)"
 
